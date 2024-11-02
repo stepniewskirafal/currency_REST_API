@@ -1,0 +1,16 @@
+server:
+  port:8080
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: currency_exchange
+      username: rootuser
+      password: rootpass
+      authentication-database: admin
+
+nbp-api:
+  base-url: https://api.nbp.pl
+  exchange-rate-path-usd: /api/exchangerates/rates/A/USD/?format=json
