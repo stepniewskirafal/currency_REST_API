@@ -7,6 +7,7 @@ import pl.rstepniewski.demo.dto.AccountRequest;
 import pl.rstepniewski.demo.dto.AccountResponse;
 import pl.rstepniewski.demo.dto.ExchangeRequest;
 import pl.rstepniewski.demo.exception.AccountNotFoundException;
+import pl.rstepniewski.demo.exception.NegativeInitialBalanceException;
 import pl.rstepniewski.demo.model.*;
 import pl.rstepniewski.demo.repository.AccountRepository;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class AccountService {
     private final ExchangeStrategyFactory exchangeStrategyFactory;
 
     public AccountResponse createAccount(AccountRequest request) {
+        if (request.getInitialBalancePLN().compareTo(BigDecimal.ZERO)<0){
+            throw new NegativeInitialBalanceException("Initial balance cannot be negative");
+        }
         String accountId = UUID.randomUUID().toString();
         Account account = new Account(accountId, request.getFirstName(), request.getLastName(), request.getInitialBalancePLN(), BigDecimal.ZERO);
         accountRepository.save(account);
@@ -48,16 +52,6 @@ public class AccountService {
         accountRepository.save(account);
         return new AccountResponse(account);
     }
-
-/*    public AccountResponse exchangeCurrency(String accountId, ExchangeRequest request) {
-        Account account = getAccountById(accountId);
-
-        ExchangeStrategy exchangeStrategy = exchangeStrategyFactory.getStrategy(request.getCurrencyFrom(), request.getCurrencyTo());
-        exchangeStrategy.exchange(account, request.getAmount(), currencyService);
-
-        accountRepository.save(account);
-        return new AccountResponse(account);
-    }*/
 
     public AccountResponse getAccount(String accountId) {
         Account account = getAccountById(accountId);
