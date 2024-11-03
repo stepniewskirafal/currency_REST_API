@@ -19,11 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.yml")
-public class AccountControllerIntegrationTest {
+class AccountControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     private String baseUrl;
     private String requestBody;
 
@@ -47,7 +46,7 @@ public class AccountControllerIntegrationTest {
     }
 
     @Test
-    void createAccountIntegrationTest() throws Exception {
+    void shouldCreateAccountWithInitialValues() throws Exception {
         mockMvc.perform(post(baseUrl)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
@@ -59,7 +58,7 @@ public class AccountControllerIntegrationTest {
     }
 
     @Test
-    void getAccountIntegrationTest() throws Exception {
+    void shouldRetrieveAccountDetails() throws Exception {
         String accountId = createAccount();
         String getAccountUrl = baseUrl + "/" + accountId;
 
@@ -73,7 +72,7 @@ public class AccountControllerIntegrationTest {
     }
 
     @Test
-    void exchangeCurrencyIntegrationTest() throws Exception {
+    void shouldExchangeCurrencyAndUpdateBalances() throws Exception {
         String accountId = createAccount();
         String exchangeUrl = baseUrl + "/" + accountId + "/exchange";
 

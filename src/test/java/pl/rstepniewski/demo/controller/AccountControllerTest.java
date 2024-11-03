@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class AccountControllerTest {
+class AccountControllerTest {
 
     @Mock
     private AccountService accountService;
@@ -27,57 +27,55 @@ public class AccountControllerTest {
     @InjectMocks
     private AccountController accountController;
 
+    private AccountResponse defaultAccountResponse;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        defaultAccountResponse = new AccountResponse(
+                new Account("John", "Doe", BigDecimal.valueOf(0.0)));
     }
 
     @Test
-    void testCreateAccount() {
+    void shouldCreateAccount() {
         // Given
         AccountRequest request = new AccountRequest();
-        AccountResponse response = new AccountResponse(
-                new Account("John", "Doe", BigDecimal.valueOf(0.0), BigDecimal.valueOf(0.0)));
-        when(accountService.createAccount(any(AccountRequest.class))).thenReturn(response);
+        when(accountService.createAccount(any(AccountRequest.class))).thenReturn(defaultAccountResponse);
 
         // When
         ResponseEntity<AccountResponse> result = accountController.createAccount(request);
 
         // Then
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(response, result.getBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode(), "Expected status code to be OK for account creation");
+        assertEquals(defaultAccountResponse, result.getBody(), "Account response body does not match expected value");
     }
 
     @Test
-    void testExchangeCurrency() {
+    void shouldGetAccount() {
         // Given
         String accountId = "123";
-        ExchangeRequest request = new ExchangeRequest();
-        AccountResponse response = new AccountResponse(
-                new Account("John", "Doe", BigDecimal.valueOf(0.0), BigDecimal.valueOf(0.0)));
-        when(accountService.exchangeCurrency(accountId, request)).thenReturn(response);
-
-        // When
-        ResponseEntity<AccountResponse> result = accountController.exchangeCurrency(accountId, request);
-
-        // Then
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(response, result.getBody());
-    }
-
-    @Test
-    void testGetAccount() {
-        // Given
-        String accountId = "123";
-        AccountResponse response = new AccountResponse(
-                new Account("123", "John", "Doe", BigDecimal.valueOf(0.0), BigDecimal.valueOf(0.0)));
-        when(accountService.getAccount(accountId)).thenReturn(response);
+        when(accountService.getAccount(accountId)).thenReturn(defaultAccountResponse);
 
         // When
         ResponseEntity<AccountResponse> result = accountController.getAccount(accountId);
 
         // Then
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(response, result.getBody());
+        assertEquals(HttpStatus.OK, result.getStatusCode(), "Expected status code to be OK for account retrieval");
+        assertEquals(defaultAccountResponse, result.getBody(), "Account response body does not match expected value");
+    }
+
+    @Test
+    void shouldExchangeCurrency() {
+        // Given
+        String accountId = "123";
+        ExchangeRequest request = new ExchangeRequest();
+        when(accountService.exchangeCurrency(accountId, request)).thenReturn(defaultAccountResponse);
+
+        // When
+        ResponseEntity<AccountResponse> result = accountController.exchangeCurrency(accountId, request);
+
+        // Then
+        assertEquals(HttpStatus.OK, result.getStatusCode(), "Expected status code to be OK for currency exchange");
+        assertEquals(defaultAccountResponse, result.getBody(), "Account response body does not match expected value");
     }
 }
