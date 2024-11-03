@@ -27,12 +27,11 @@ public class Account {
     @Version
     private Long version;
 
-    public Account(String firstName, String lastName, BigDecimal balancePLN, BigDecimal balanceUSD) {
+    public Account(String firstName, String lastName, BigDecimal balancePLN) {
         this.accountId = UUID.randomUUID().toString();
         this.firstName = firstName;
         this.lastName = lastName;
         this.balancePLN = balancePLN;
-        this.balanceUSD = balanceUSD;
     }
 
     public Account(String accountId, String firstName, String lastName, BigDecimal balancePLN, BigDecimal balanceUSD) {
