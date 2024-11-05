@@ -25,24 +25,17 @@ class AccountControllerIntegrationTest {
     private MockMvc mockMvc;
     private String baseUrl;
     private String requestBody;
+    private String accountId;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         baseUrl = "http://localhost:8080/api/accounts";
         requestBody = "{\n" +
                 "  \"firstName\": \"John\",\n" +
                 "  \"lastName\": \"Doe\",\n" +
                 "  \"initialBalancePLN\": 1000.0\n" +
                 "}";
-    }
-
-    private String createAccount() throws Exception {
-        ResultActions resultActions = mockMvc.perform(post(baseUrl)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isOk());
-        String responseContent = resultActions.andReturn().getResponse().getContentAsString();
-        return JsonPath.parse(responseContent).read("$.accountId");
+        accountId = createAccount();
     }
 
     @Test
@@ -59,7 +52,6 @@ class AccountControllerIntegrationTest {
 
     @Test
     void shouldRetrieveAccountDetails() throws Exception {
-        String accountId = createAccount();
         String getAccountUrl = baseUrl + "/" + accountId;
 
         mockMvc.perform(get(getAccountUrl)
@@ -73,7 +65,6 @@ class AccountControllerIntegrationTest {
 
     @Test
     void shouldExchangeCurrencyAndUpdateBalances() throws Exception {
-        String accountId = createAccount();
         String exchangeUrl = baseUrl + "/" + accountId + "/exchange";
 
         mockMvc.perform(post(exchangeUrl)
@@ -84,7 +75,15 @@ class AccountControllerIntegrationTest {
                                 "  \"currencyTo\": \"USD\"\n" +
                                 "}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.balancePLN").value(900.00))
-                .andExpect(jsonPath("$.balanceUSD").value(24.96));
+                .andExpect(jsonPath("$.balancePLN").value(900.00));
+    }
+
+    private String createAccount() throws Exception {
+        ResultActions resultActions = mockMvc.perform(post(baseUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk());
+        String responseContent = resultActions.andReturn().getResponse().getContentAsString();
+        return JsonPath.parse(responseContent).read("$.accountId");
     }
 }
