@@ -53,7 +53,7 @@ public class AccountService {
 
     private Account getAccountById(String accountId) {
         return accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+                .orElseThrow(() -> new AccountNotFoundException("Account with ID " + accountId + " not found."));
     }
 
     private Account retrieveAccountWithValidation(String accountId) {

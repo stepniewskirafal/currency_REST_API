@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
                 "ACCOUNT_NOT_FOUND",
                 LocalDateTime.now().toString()
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(errorResponse);
     }
