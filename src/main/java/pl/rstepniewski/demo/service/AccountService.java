@@ -35,7 +35,7 @@ public class AccountService {
         return new AccountResponse(account);
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public AccountResponse exchangeCurrency(String accountId, ExchangeRequest request) {
         Account account = retrieveAccountWithValidation(accountId);
         ExchangeStrategy exchangeStrategy = getExchangeStrategy(request);
