@@ -14,3 +14,8 @@ spring:
 nbp-api:
   base-url: https://api.nbp.pl
   exchange-rate-path-usd: /api/exchangerates/rates/A/USD/?format=json
+cache:
+  cache-init-capacity: 5
+  cache-max-size: 100
+  expiration:
+    hours: 12
