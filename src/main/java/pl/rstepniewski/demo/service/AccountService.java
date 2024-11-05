@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import pl.rstepniewski.demo.service.strategy.ExchangeStrategy;
 import pl.rstepniewski.demo.service.strategy.ExchangeStrategyFactory;
 
-
-import javax.persistence.LockModeType;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -28,7 +26,7 @@ public class AccountService {
     private final ExchangeStrategyFactory exchangeStrategyFactory;
 
     public AccountResponse createAccount(AccountRequest request) {
-        if (request.getInitialBalancePLN().compareTo(BigDecimal.ZERO)<0){
+        if (request.getInitialBalancePLN().compareTo(BigDecimal.ZERO) < 0) {
             throw new NegativeInitialBalanceException("Initial balance cannot be negative");
         }
         String accountId = UUID.randomUUID().toString();
@@ -39,17 +37,11 @@ public class AccountService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AccountResponse exchangeCurrency(String accountId, ExchangeRequest request) {
-        Account account = accountRepository.findByIdWithLock(accountId, LockModeType.PESSIMISTIC_WRITE)
-                .orElseThrow(() -> new AccountNotFoundException("Account with ID " + accountId + " not found."));
+        Account account = retrieveAccountWithValidation(accountId);
+        ExchangeStrategy exchangeStrategy = getExchangeStrategy(request);
+        executeCurrencyExchange(account, request, exchangeStrategy);
+        saveUpdatedAccount(account);
 
-        ExchangeStrategy exchangeStrategy = exchangeStrategyFactory.getStrategy(
-                request.getCurrencyFrom(),
-                request.getCurrencyTo()
-        );
-
-        exchangeStrategy.exchange(account, request.getAmount(), currencyService);
-
-        accountRepository.save(account);
         return new AccountResponse(account);
     }
 
@@ -59,6 +51,27 @@ public class AccountService {
     }
 
     private Account getAccountById(String accountId) {
-        return accountRepository.findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account not found"));
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+    }
+
+    private Account retrieveAccountWithValidation(String accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account with ID " + accountId + " not found."));
+    }
+
+    private ExchangeStrategy getExchangeStrategy(ExchangeRequest request) {
+        return exchangeStrategyFactory.getStrategy(
+                request.getCurrencyFrom(),
+                request.getCurrencyTo()
+        );
+    }
+
+    private void executeCurrencyExchange(Account account, ExchangeRequest request, ExchangeStrategy exchangeStrategy) {
+        exchangeStrategy.exchange(account, request.getAmount(), currencyService);
+    }
+
+    private void saveUpdatedAccount(Account account) {
+        accountRepository.save(account);
     }
 }

@@ -15,13 +15,13 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     @Value("${cache.expiration.hours}")
-    private short cacheExpirationHours;
+    private int cacheExpirationHours;
 
     @Value("${cache.cache-max-size}")
-    private short cacheMaxSize;
+    private int cacheMaxSize;
 
     @Value("${cache.cache-init-capacity}")
-    private short cacheInitCapacity;
+    private int cacheInitCapacity;
 
     @Bean
     public Caffeine<Object, Object> caffeineConfig() {
