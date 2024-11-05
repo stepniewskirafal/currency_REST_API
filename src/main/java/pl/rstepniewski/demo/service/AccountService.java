@@ -45,6 +45,7 @@ public class AccountService {
         return new AccountResponse(account);
     }
 
+    @Transactional(readOnly = true)
     public AccountResponse getAccount(String accountId) {
         Account account = getAccountById(accountId);
         return new AccountResponse(account);
