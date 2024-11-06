@@ -1,5 +1,5 @@
 server:
-  port:8080
+  port: 8080
 
 spring:
   data:
@@ -14,8 +14,18 @@ spring:
 nbp-api:
   base-url: https://api.nbp.pl
   exchange-rate-path-usd: /api/exchangerates/rates/A/USD/?format=json
+
 cache:
   cache-init-capacity: 5
   cache-max-size: 100
   expiration:
     hours: 12
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, env, mappings, metrics, beans
+  endpoint:
+    health:
+      show-details: always
