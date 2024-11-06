@@ -10,6 +10,9 @@ spring:
       username: rootuser
       password: rootpass
       authentication-database: admin
+  cache:
+    caffeine:
+      spec: maximumSize=${cache.cache-max-size},expireAfterWrite=${cache.expiration.hours}h
 
 nbp-api:
   base-url: https://api.nbp.pl
@@ -25,7 +28,11 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, env, mappings, metrics, beans
+        include: caches, health, env, mappings, metrics, beans
   endpoint:
     health:
       show-details: always
+
+logging:
+  level:
+    org.springframework.cache: TRACE

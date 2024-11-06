@@ -2,7 +2,9 @@ package pl.rstepniewski.demo.config;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -24,15 +26,14 @@ public class CacheConfig {
     private int cacheInitCapacity;
 
     @Bean
-    public Caffeine<Object, Object> caffeineConfig() {
-        return Caffeine.newBuilder()
+    public CacheManager cacheManager() {
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("exchangeRates");
+
+        cacheManager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(cacheExpirationHours, TimeUnit.HOURS)
                 .initialCapacity(cacheInitCapacity)
-                .maximumSize(cacheMaxSize);
-    }
+                .maximumSize(cacheMaxSize));
 
-    @Bean
-    public Cache<String, BigDecimal> exchangeRateCache(Caffeine<Object, Object> caffeine) {
-        return caffeine.build();
+        return cacheManager;
     }
 }
