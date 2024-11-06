@@ -21,8 +21,15 @@ nbp-api:
 cache:
   cache-init-capacity: 5
   cache-max-size: 100
-  expiration:
-    hours: 12
+  nbp:
+    update-window:
+      start-hour: 11
+      start-minute: 45
+      end-hour: 12
+      end-minute: 15
+      clear-cron: "0 45-59,0-15 11-12 * * MON-FRI"
+  scheduling:
+    enabled: true
 
 management:
   endpoints:

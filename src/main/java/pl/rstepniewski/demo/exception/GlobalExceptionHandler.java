@@ -55,6 +55,19 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(UnexpectedFetchExchangeException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponse> handleUnexpectedFetchExchangeException(UnexpectedFetchExchangeException ex) {
+        log.error("Unexpected runtime error occurred", ex);
+        ErrorResponse errorResponse = new ErrorResponse(
+                "INTERNAL_SERVER_ERROR",
+                LocalDateTime.now().toString()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(errorResponse);
+    }
+
     @ExceptionHandler(RestClientException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponse> handleRestClientException(RestClientException ex) {
